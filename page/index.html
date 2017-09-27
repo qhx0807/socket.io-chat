@@ -92,10 +92,20 @@
                     </div>
                 </div>
             </transition>
+
+            <transition name="">
+                <div class="config-wrap" v-if="!show">
+                    <ul>
+                        <li v-for="(n, index) in avatarData" @click="selectAvatar(n, index)" :class="{selected:index==selectedNum}"><img :src="n" alt="1"></li>
+                    </ul>
+                    <input class="username" v-model="myName" type="text" placeholder="昵称"><br>
+                    <input class="yzcode" v-model="vcode" type="text" placeholder="验证码">
+                    <button class="joinbtn" @click="onClickConfirm">确认</button>
+                </div>
+            </transition>
         </div>
    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.0/vue.js"></script>
-    
     <script src="http://lib.baomitu.com/socket.io/2.0.3/socket.io.slim.js"></script>
     <script src="canvas.js"></script>
     <script>
@@ -113,14 +123,53 @@
                 ],
                 myName: '',
                 myAvatar: '',
-                show: true,
+                vcode: '',
+                show: false,
+                num:24,
+                avatarData:[
+                    'i/0.gif',
+                    'i/1.png',
+                    'i/3.gif',
+                    'i/4.png',
+                    'i/5.gif',
+                    'i/6.gif',
+                    'i/7.gif',
+                    'i/8.gif',
+                    'i/10.gif',
+                    'i/11.gif',
+                    'i/12.gif',
+                    'i/13.gif',
+                    'i/14.gif',
+                    'i/15.png',
+                    'i/16.png',
+                    'i/17.png',
+                    'i/18.png',
+                    'i/19.png',
+                    'i/20.png',
+                    'i/21.png',
+                    'i/22.png',
+                    'i/23.png',
+                    'i/24.png',
+                    'i/26.png',
+                ],
+                selectedNum: -1,
             },
             created() {
+                if(localStorage.getItem("name") && localStorage.getItem("avatar")){
+                    this.myName = localStorage.getItem("name");
+                    this.myAvatar = localStorage.getItem("avatar");
+                    this.show = true;
+                }else{
+                    this.show = false;
+                }
+            },
+            computed:{
 
             },
             mounted() {
                 var socket = io('http://localhost:3000');
                 var t = this;
+                //连接成功
                 socket.on('connect', function () {
                     var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
                     socket.emit('notify event',
@@ -132,8 +181,21 @@
                             type: 0,
                         }
                     )
-
                 });
+                //断开连接
+                socket.on('disconnect', function () {
+                    var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
+                    socket.emit('notify event',
+                        {
+                            time: nowTime,
+                            name: t.myName,
+                            message: '断开连接！',
+                            avatar: t.myAvatar,
+                            type: 0,
+                        }
+                    )
+                });
+                //接收提示消息
                 socket.on('notify event', function (obj) {
                     console.log(obj)
                 })
@@ -143,7 +205,27 @@
                 });
             },
             methods: {
-
+                selectAvatar(src, index){
+                    this.selectedNum = index;
+                    this.myAvatar = src;
+                },
+                onClickConfirm(){
+                    if(this.myAvatar == ''){
+                        alert("请选择头像^_^avatar");
+                        return false;
+                    }
+                    if(this.myName.replace(/^\s+|\s+$/g,"") == '' || this.myName == null){
+                        alert("请输入昵称^_^");
+                        return false;
+                    }
+                    if(this.vcode != '7997'){
+                        alert("验证码错误^_^");
+                        return false;
+                    }
+                    this.show = true;
+                    localStorage.setItem("name", this.myName);
+                    localStorage.setItem("avatar", this.myAvatar);
+                }
             }
         })
     </script>
