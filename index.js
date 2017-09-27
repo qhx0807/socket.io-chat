@@ -12,13 +12,16 @@ io.on('connection', function (socket) {
 
     socket.emit('news', { hello: 'world' });
 
+    socket.on('notify event', function(data){
+        console.log(data)
+        socket.emit('notify event', data);
+    })
 
     socket.on('disconnect', function () {
         console.log('user disconnected');
     });
 
 });
-
 
 
 http.listen(3000, function () {
