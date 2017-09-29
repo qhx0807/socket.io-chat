@@ -43,7 +43,7 @@
         <canvas id="canvas"></canvas>
         <div id="app" v-cloak>
             <transition-group name="slide-fade">
-                <div key="1" class="online-wrap">
+                <div key="1" class="online-wrap" v-if="show">
                     当前在线：
                     <span class="online-user">
                         <img src="avatar.png" alt=""> qhx
@@ -55,7 +55,7 @@
                 <div key="2" class="content" v-if="show">
                     <div class="con-body" id="msgContent">
                         <ul>
-                            <li v-for="item in msgData" :class="{fl:item.name==myName,center:item.type===0}">
+                            <li v-for="item in msgData" :class="{fl:item.name==myName&&item.type==1,center:item.type===0}">
                                 <span class="tips" v-if="item.type===0" v-html="item.message"></span>
                                 <div v-else>
                                     <img class="avatar" v-if="item.name!=myName" :src="item.avatar" alt="">
@@ -73,7 +73,7 @@
                     <div class="con-foot">
                         <img class="icon" @click="onClickEmo" src="icon.png" alt="">
                         <img class="icon" src="icon.png" alt="">
-                        <div contenteditable="true" id="msginput"></div>
+                        <div contenteditable="true" @click="emoShow=false" id="msginput"></div>
                         <button class="sendbtn" @click="onClickSend">
                             <!-- <img class="loading-icon" src="icon/loading.png" alt=""> -->
                             发送(Enter)
@@ -133,7 +133,7 @@
                         time: '2017-09-27 14:21',
                         name: 'qhx1',
                         message: 'Hello message!',
-                        avatar: 'i/9.gif',
+                        avatar: 'i/0.gif',
                         type: 1,
                     },
                 ],
@@ -259,45 +259,47 @@
             computed:{
 
             },
-            // mounted() {
-            //     var socket = io('http://localhost:3000');
-            //     this.socket = socket;
-            //     var t = this;
-            //     //连接成功
-            //     socket.on('connect', function () {
-            //         var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
-            //         socket.emit('notify event',
-            //             {
-            //                 time: nowTime,
-            //                 name: t.myName,
-            //                 message: '连接成功！',
-            //                 avatar: t.myAvatar,
-            //                 type: 0,
-            //             }
-            //         )
-            //     });
-            //     //断开连接
-            //     socket.on('disconnect', function () {
-            //         var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
-            //         socket.emit('notify event',
-            //             {
-            //                 time: nowTime,
-            //                 name: t.myName,
-            //                 message: '断开连接！',
-            //                 avatar: t.myAvatar,
-            //                 type: 0,
-            //             }
-            //         )
-            //     });
-            //     //接收提示消息
-            //     socket.on('notify event', function (obj) {
-            //         console.log(obj)
-            //     })
-
-            //     socket.on('news', function (data) {
-            //         console.log(data);
-            //     });
-            // },
+            mounted() {
+                var socket = io('http://localhost:3000');
+                this.socket = socket;
+                var t = this;
+                //连接成功
+                socket.on('connect', function () {
+                    var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
+                    socket.emit('notify event',
+                        {
+                            time: nowTime,
+                            name: t.myName,
+                            message: t.myName + ' 连接成功！ '+ nowTime,
+                            avatar: t.myAvatar,
+                            type: 0,
+                        }
+                    )
+                });
+                //断开连接
+                socket.on('disconnect', function () {
+                    var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
+                    socket.emit('notify event',
+                        {
+                            time: nowTime,
+                            name: t.myName,
+                            message: t.myName + '断开连接！'+ nowTime,
+                            avatar: t.myAvatar,
+                            type: 0,
+                        }
+                    )
+                });
+                //接收提示消息
+                socket.on('notify event', function (obj) {
+                    console.log(obj);
+                    t.msgData.push(obj);
+                })
+                //接收消息
+                socket.on('message', function (obj) {
+                    console.log(obj);
+                    t.msgData.push(obj);
+                });
+            },
             methods: {
                 selectAvatar(src, index){
                     this.selectedNum = index;
@@ -328,9 +330,21 @@
                     dom.innerHTML += `<img src="${url}">`;
                 },
                 onClickSend(){
-                    // var dom = document.getElementById("msginput");
-                    // alert(dom.innerHTML)
+                    this.emoShow = false;
+                    var msg = document.getElementById("msginput").innerHTML;
+                    var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
+                    var t=this;
+                    this.socket.emit('message',
+                        {
+                            time: nowTime,
+                            name: t.myName,
+                            message: msg,
+                            avatar: t.myAvatar,
+                            type: 1,
+                        }
+                    );
                     this.domSorcollBtom();
+                    document.getElementById("msginput").innerHTML='';
                 },
                 domSorcollBtom(){
                     var dom = document.getElementById("msgContent");

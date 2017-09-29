@@ -58,7 +58,7 @@ canvas {
     line-height: 26px;
     display: inline-block;
     height: 26px;
-    padding: 0 16px 0 10px;
+    padding: 0 16px 0 0px;
     color: white;
     background-color: rgba(0,0,0,0.3);
     border-radius: 26px;
