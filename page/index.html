@@ -24,13 +24,35 @@
             transform: translateX(10px);
             opacity: 0;
         }
-       
+        
+        .btm-fade-enter-active {
+            transition: all .5s ease;
+        }
+
+        .btm-fade-leave-active {
+            transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+        }
+
+        .btm-fade-enter,
+        .btm-fade-leave-to {
+            transform: translateY(15px);
+            opacity: 0;
+        }
     </style>
     
         <canvas id="canvas"></canvas>
-        <div id="app">
-            <transition name="slide-fade">
-                <div class="content" v-if="show">
+        <div id="app" v-cloak>
+            <transition-group name="slide-fade">
+                <div key="1" class="online-wrap">
+                    当前在线：
+                    <span class="online-user">
+                        <img src="avatar.png" alt=""> qhx
+                    </span>
+                    <span class="online-user">
+                        <img src="avatar.png" alt=""> xiaobudianxihuan
+                    </span>
+                </div>
+                <div key="2" class="content" v-if="show">
                     <div class="con-body">
                         <ul>
                             <li style="text-align:center"><span class="tips">12:09</span></li>
@@ -38,7 +60,7 @@
                                 <img class="avatar" src="avatar.png" alt="">
                                 <span class="msg">
                                     <div class="triangle-left"></div>
-                                    Hello!用 CSS 绘制三角形，不难看出，当盒子内容的宽度和高度远小于边框的时候，边框的显示为等腰梯形。由此我们可以推断，当我们将 div 的宽高都设为 0 的时候，代表盒子内容的白色正方形会消失，于此同时，边框显示为等腰三角形
+                                    <img src="emoj/geili.gif">
                                 </span>
                             </li>
                             <li style="text-align:center"><span class="tips">12:18</span></li>
@@ -86,12 +108,26 @@
     
                     </div>
                     <div class="con-foot">
+                        <img class="icon" @click="onClickEmo" src="icon.png" alt="">
                         <img class="icon" src="icon.png" alt="">
-                        <textarea id="msginput"></textarea>
-                        <button class="sendbtn">发送(Enter)</button>
+                        <div contenteditable="true" id="msginput"></div>
+                        <button class="sendbtn" @click="onClickSend">发送(Enter)</button>
+
+                        <transition name="btm-fade">
+                            <div class="emotions-wrap" v-show="emoShow">
+                                <div class="emo-tool">
+                                    <a class="emo-close" @click="emoShow=false" href="javascript:;" title="关闭">X</a>
+                                </div>
+                                <div class="emo-panel">
+                                    <ul>
+                                        <li v-for="item in emoList" :key="item.url" @click="onSelectEmo(item.title,item.url)"><img :src="item.url" :title="item.title" :alt="item.title"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </transition>
                     </div>
                 </div>
-            </transition>
+            </transition-group>
 
             <transition name="">
                 <div class="config-wrap" v-if="!show">
@@ -121,6 +157,7 @@
                         type: 0,
                     },
                 ],
+                message:'',
                 myName: '',
                 myAvatar: '',
                 vcode: '',
@@ -153,6 +190,82 @@
                     'i/26.png',
                 ],
                 selectedNum: -1,
+                emoList:[
+                    {'title':'微笑','url':'emoj/weixiao.gif'},
+                    {'title':'嘻嘻','url':'emoj/xixi.gif'},
+                    {'title':'哈哈','url':'emoj/haha.gif'},
+                    {'title':'可爱','url':'emoj/keai.gif'},
+                    {'title':'可怜','url':'emoj/kelian.gif'},
+                    {'title':'挖鼻','url':'emoj/wabi.gif'},
+                    {'title':'吃惊','url':'emoj/chijing.gif'},
+                    {'title':'害羞','url':'emoj/haixiu.gif'},
+                    {'title':'挤眼','url':'emoj/jiyan.gif'},
+                    {'title':'闭嘴','url':'emoj/bizui.gif'},
+                    {'title':'鄙视','url':'emoj/bishi.gif'},
+                    {'title':'爱你','url':'emoj/aini.gif'},
+                    {'title':'泪','url':'emoj/lei.gif'},
+                    {'title':'偷笑','url':'emoj/touxiao.gif'},
+                    {'title':'亲亲','url':'emoj/qinqin.gif'},
+                    {'title':'生病','url':'emoj/shengbing.gif'},
+                    {'title':'太开心','url':'emoj/taikaixin.gif'},
+                    {'title':'白眼','url':'emoj/baiyan.gif'},
+                    {'title':'右哼哼','url':'emoj/youhengheng.gif'},
+                    {'title':'左哼哼','url':'emoj/zuohengheng.gif'},
+                    {'title':'嘘','url':'emoj/xu.gif'},
+                    {'title':'衰','url':'emoj/shuai.gif'},
+                    {'title':'吐','url':'emoj/tu.gif'},
+                    {'title':'哈欠','url':'emoj/haqian.gif'},
+                    {'title':'抱抱','url':'emoj/baobao.gif'},
+                    {'title':'怒','url':'emoj/nu.gif'},
+                    {'title':'疑问','url':'emoj/yiwen.gif'},
+                    {'title':'馋嘴','url':'emoj/chanzui.gif'},
+                    {'title':'拜拜','url':'emoj/baibai.gif'},
+                    {'title':'思考','url':'emoj/sikao.gif'},
+                    {'title':'汗','url':'emoj/han.gif'},
+                    {'title':'困','url':'emoj/kun.gif'},
+                    {'title':'睡','url':'emoj/shui.gif'},
+                    {'title':'钱','url':'emoj/qian.gif'},
+                    {'title':'失望','url':'emoj/shiwang.gif'},
+                    {'title':'酷','url':'emoj/ku.gif'},
+                    {'title':'色','url':'emoj/se.gif'},
+                    {'title':'哼','url':'emoj/heng.gif'},
+                    {'title':'鼓掌','url':'emoj/guzhang.gif'},
+                    {'title':'晕','url':'emoj/yun.gif'},
+                    {'title':'悲伤','url':'emoj/beishang.gif'},
+                    {'title':'抓狂','url':'emoj/zhuakuang.gif'},
+                    {'title':'黑线','url':'emoj/heixian.gif'},
+                    {'title':'阴险','url':'emoj/yinxian.gif'},
+                    {'title':'怒骂','url':'emoj/numa.gif'},
+                    {'title':'互粉','url':'emoj/hufen.gif'},
+                    {'title':'书呆子','url':'emoj/shudaizi.gif'},
+                    {'title':'愤怒','url':'emoj/fennu.gif'},
+                    {'title':'感冒','url':'emoj/ganmao.gif'},
+                    {'title':'心','url':'emoj/xin.gif'},
+                    {'title':'伤心','url':'emoj/shangxin.gif'},
+                    {'title':'猪','url':'emoj/zhu.gif'},
+                    {'title':'熊猫','url':'emoj/xiongmao.gif'},
+                    {'title':'兔子','url':'emoj/tuzi.gif'},
+                    {'title':'OK','url':'emoj/ok.gif'},
+                    {'title':'耶','url':'emoj/ye.gif'},
+                    {'title':'GOOD','url':'emoj/good.gif'},
+                    {'title':'NO','url':'emoj/no.gif'},
+                    {'title':'赞','url':'emoj/zan.gif'},
+                    {'title':'来','url':'emoj/lai.gif'},
+                    {'title':'弱','url':'emoj/ruo.gif'},
+                    {'title':'草泥马','url':'emoj/caonima.gif'},
+                    {'title':'神马','url':'emoj/shenma.gif'},
+                    {'title':'囧','url':'emoj/jiong.gif'},
+                    {'title':'浮云','url':'emoj/fuyun.gif'},
+                    {'title':'给力','url':'emoj/geili.gif'},
+                    {'title':'围观','url':'emoj/weiguan.gif'},
+                    {'title':'威武','url':'emoj/weiwu.gif'},
+                    {'title':'话筒','url':'emoj/huatong.gif'},
+                    {'title':'蜡烛','url':'emoj/lazhu.gif'},
+                    {'title':'蛋糕','url':'emoj/dangao.gif'},
+                    {'title':'发红包','url':'emoj/fahongbao.gif'}
+                ],
+                emoShow: false,
+                socket: null,
             },
             created() {
                 if(localStorage.getItem("name") && localStorage.getItem("avatar")){
@@ -166,44 +279,45 @@
             computed:{
 
             },
-            mounted() {
-                var socket = io('http://localhost:3000');
-                var t = this;
-                //连接成功
-                socket.on('connect', function () {
-                    var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
-                    socket.emit('notify event',
-                        {
-                            time: nowTime,
-                            name: t.myName,
-                            message: '连接成功！',
-                            avatar: t.myAvatar,
-                            type: 0,
-                        }
-                    )
-                });
-                //断开连接
-                socket.on('disconnect', function () {
-                    var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
-                    socket.emit('notify event',
-                        {
-                            time: nowTime,
-                            name: t.myName,
-                            message: '断开连接！',
-                            avatar: t.myAvatar,
-                            type: 0,
-                        }
-                    )
-                });
-                //接收提示消息
-                socket.on('notify event', function (obj) {
-                    console.log(obj)
-                })
+            // mounted() {
+            //     var socket = io('http://localhost:3000');
+            //     this.socket = socket;
+            //     var t = this;
+            //     //连接成功
+            //     socket.on('connect', function () {
+            //         var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
+            //         socket.emit('notify event',
+            //             {
+            //                 time: nowTime,
+            //                 name: t.myName,
+            //                 message: '连接成功！',
+            //                 avatar: t.myAvatar,
+            //                 type: 0,
+            //             }
+            //         )
+            //     });
+            //     //断开连接
+            //     socket.on('disconnect', function () {
+            //         var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
+            //         socket.emit('notify event',
+            //             {
+            //                 time: nowTime,
+            //                 name: t.myName,
+            //                 message: '断开连接！',
+            //                 avatar: t.myAvatar,
+            //                 type: 0,
+            //             }
+            //         )
+            //     });
+            //     //接收提示消息
+            //     socket.on('notify event', function (obj) {
+            //         console.log(obj)
+            //     })
 
-                socket.on('news', function (data) {
-                    console.log(data);
-                });
-            },
+            //     socket.on('news', function (data) {
+            //         console.log(data);
+            //     });
+            // },
             methods: {
                 selectAvatar(src, index){
                     this.selectedNum = index;
@@ -225,7 +339,18 @@
                     this.show = true;
                     localStorage.setItem("name", this.myName);
                     localStorage.setItem("avatar", this.myAvatar);
-                }
+                },
+                onClickEmo(){
+                    this.emoShow = !this.emoShow;
+                },
+                onSelectEmo(title, url){
+                    var dom = document.getElementById("msginput");
+                    dom.innerHTML += `<img src="${url}">`;
+                },
+                onClickSend(){
+                    var dom = document.getElementById("msginput");
+                    alert(dom.innerHTML)
+                },
             }
         })
     </script>

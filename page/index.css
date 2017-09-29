@@ -1,3 +1,6 @@
+[v-cloak] {
+    display: none!important;
+  }
 html{
     height: 100%;
 }
@@ -41,11 +44,38 @@ canvas {
     left: 0;
     z-index: -1;
 }
+.online-wrap{
+    width: 666px;
+    min-height: 20px;
+    margin: 0 auto;
+    font-size: 14px;
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    
+}
+.online-user{
+    line-height: 26px;
+    display: inline-block;
+    height: 26px;
+    padding: 0 16px;
+    color: white;
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 26px;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+.online-user img{
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    vertical-align: top;
+}
 .content{
     width: 666px;
     height: 600px;
     margin: 0 auto;
-    top: 50px;
+    top: 0px;
     background-color: #F5F5F5;
     position: relative;
     border: 1px solid #d5d5d5;
@@ -60,6 +90,7 @@ canvas {
     height: 140px;
     background-color: #fff;
     border-top: 1px solid #d5d5d5;
+    position: relative;
 }
 .icon{
     height: 28px;
@@ -67,11 +98,75 @@ canvas {
     margin-top: 5px;
     display: block;
     cursor: pointer;
+    float: left;
+}
+.emotions-wrap{
+    position: absolute;
+    width: 410px;
+    height: 250px;
+    background-color:white;
+    top: -252px;
+    left: -70px;
+    border: 1px solid #dbdbdb;
+    border-radius: 2px;
+}
+.emotions-wrap:before{
+    position: absolute;
+    top: 251px;
+    left: 86px;
+    display: block;
+    content: '';
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-top-color: #dbdbdb;
+}
+.emo-tool{
+    height: 28px;
+    background: #f0f0f0;
+}
+.emo-close{
+    float: right;
+    margin-right: 5px;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    font-family: Arial;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+.emo-close:hover{
+    color: rgba(18, 150, 17, 1);
+}
+.emo-panel{
+
+}
+.emo-panel ul{
+    display: block;
+    width: 372px;
+    margin: 0 auto;
+    padding: 15px 5px 20px;
+    overflow: hidden;
+    list-style: none;
+}
+.emo-panel ul li{
+    position: relative;
+    z-index: 8;
+    float: left;
+    width: 22px;
+    height: 22px;
+    padding: 4px;
+    margin-left: -1px;
+    margin-top: -1px;
+    border: 1px solid #e8e8e8;
+    cursor: pointer;
 }
 #msginput{
     height: 62px;
     width: 640px;
-    resize: none;
+    overflow: auto;
     border: none;
     outline: none;
     padding: 5px 12px;
