@@ -53,56 +53,19 @@
                     </span>
                 </div>
                 <div key="2" class="content" v-if="show">
-                    <div class="con-body">
+                    <div class="con-body" id="msgContent">
                         <ul>
-                            <li style="text-align:center"><span class="tips">12:09</span></li>
-                            <li>
-                                <img class="avatar" src="avatar.png" alt="">
-                                <span class="msg">
-                                    <div class="triangle-left"></div>
-                                    <img src="emoj/geili.gif">
-                                </span>
-                            </li>
-                            <li style="text-align:center"><span class="tips">12:18</span></li>
-                            <li style="float:right">
-                                <span class="msg green">
-                                    <div class="triangle-right"></div>
-                                    Hello!用 CSS 绘制三角形，不难看出，当盒子内容的宽度和高度远小于边框的时候，边框的显示为等腰梯形。由此我们可以推断，当我们将 div 的宽高都设为 0 的时候，代表盒子内容的白色正方形会消失，于此同时，边框显示为等腰三角形
-                                </span>
-                                <img class="avatar" src="http://os70o8m36.bkt.clouddn.com/4.jpg" alt="">
-                            </li>
-                            <li>
-                                <img class="avatar" src="avatar.png" alt="">
-                                <span class="msg">
-                                    <div class="triangle-left"></div>
-                                    Hello!用 CSS 绘制三角形，不难看出
-                                </span>
-                            </li>
-                            <li>
-                                <img class="avatar" src="avatar.png" alt="">
-                                <span class="msg">
-                                    <div class="triangle-left"></div>
-                                    Hello!
-                                </span>
-                            </li>
-                            <li>
-                                <img class="avatar" src="avatar.png" alt="">
-                                <span class="msg">
-                                    <div class="triangle-left"></div>
-                                    Hello!
-                                </span>
-                            </li>
-                            <li style="float:right">
-                                <span class="msg green">
-                                    <div class="triangle-right"></div>不难看出，当盒子内容的宽度和高度远小于边框的
-                                </span>
-                                <img class="avatar" src="http://os70o8m36.bkt.clouddn.com/4.jpg" alt="">
-                            </li>
-                            <li style="float:right">
-                                <span class="msg green">
-                                    <div class="triangle-right"></div>不难看出，当盒子内容的宽度和高盒子内容的宽度和高盒子内容的宽度和高盒子内容的宽度和高度远小于边框的
-                                </span>
-                                <img class="avatar" src="http://os70o8m36.bkt.clouddn.com/4.jpg" alt="">
+                            <li v-for="item in msgData" :class="{fl:item.name==myName,center:item.type===0}">
+                                <span class="tips" v-if="item.type===0" v-html="item.message"></span>
+                                <div v-else>
+                                    <img class="avatar" v-if="item.name!=myName" :src="item.avatar" alt="">
+                                    <span class="msg" :class="{green:item.name==myName}">
+                                        <div v-if="item.name==myName" class="triangle-right"></div>
+                                        <div v-else class="triangle-left"></div>
+                                        <span v-html="item.message"></span>
+                                    </span>
+                                    <img class="avatar" v-if="item.name==myName" :src="item.avatar" alt="">
+                                </div>
                             </li>
                         </ul>
     
@@ -111,7 +74,10 @@
                         <img class="icon" @click="onClickEmo" src="icon.png" alt="">
                         <img class="icon" src="icon.png" alt="">
                         <div contenteditable="true" id="msginput"></div>
-                        <button class="sendbtn" @click="onClickSend">发送(Enter)</button>
+                        <button class="sendbtn" @click="onClickSend">
+                            <!-- <img class="loading-icon" src="icon/loading.png" alt=""> -->
+                            发送(Enter)
+                        </button>
 
                         <transition name="btm-fade">
                             <div class="emotions-wrap" v-show="emoShow">
@@ -151,10 +117,24 @@
                 msgData: [
                     {
                         time: '2017-09-27 14:21',
-                        name: '',
-                        message: '',
-                        avatar: '',
+                        name: 'qhx1',
+                        message: 'Hello message!',
+                        avatar: 'i/9.gif',
                         type: 0,
+                    },
+                    {
+                        time: '2017-09-27 14:21',
+                        name: 'qhx',
+                        message: 'Hello message!',
+                        avatar: 'i/9.gif',
+                        type: 1,
+                    },
+                    {
+                        time: '2017-09-27 14:21',
+                        name: 'qhx1',
+                        message: 'Hello message!',
+                        avatar: 'i/9.gif',
+                        type: 1,
                     },
                 ],
                 message:'',
@@ -348,8 +328,15 @@
                     dom.innerHTML += `<img src="${url}">`;
                 },
                 onClickSend(){
-                    var dom = document.getElementById("msginput");
-                    alert(dom.innerHTML)
+                    // var dom = document.getElementById("msginput");
+                    // alert(dom.innerHTML)
+                    this.domSorcollBtom();
+                },
+                domSorcollBtom(){
+                    var dom = document.getElementById("msgContent");
+                    var s = dom.scrollHeight;
+                    var c = dom.clientHeight;
+                    dom.scrollTop = s;
                 },
             }
         })
