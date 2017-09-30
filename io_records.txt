@@ -71,3 +71,5 @@
 {"time":"2017-09-30 11:42:06","name":"qhx","message":"122","avatar":"i/6.gif","type":1}
 {"time":"2017-09-30 11:42:09","name":"qhx","message":"22 12 21","avatar":"i/6.gif","type":1}
 {"time":"2017-09-30 11:42:15","name":"qhx","message":"qhx 连接成功！ 2017-09-30 11:42:15","avatar":"i/6.gif","type":0}
+{"time":"2017-09-30 11:46:57","name":"qhx","message":"qhx 连接成功！ 2017-09-30 11:46:57","avatar":"i/6.gif","type":0}
+{"time":"2017-09-30 11:46:55","name":"qhx","message":"qhx断开连接！2017-09-30 11:46:55","avatar":"i/6.gif","type":0}

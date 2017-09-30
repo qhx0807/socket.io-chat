@@ -17,23 +17,23 @@ io.on('connection', function (socket) {
     console.log('a user connected');
     io.emit('user count', io.eio.clientsCount);
 
-    socket.on('join', function(user){
+    socket.on('join', function (user) {
         //console.log(user)
-        var i = userData.find(function(item){
+        var i = userData.find(function (item) {
             return item.name === user.name
         })
-        if(!i){
+        if (!i) {
             userData.push(user);
         }
         io.emit("user info", userData);
     })
 
-    socket.on('leave', function(user){
+    socket.on('leave', function (user) {
         //console.log(user)
-        var i = userData.find(function(item){
+        var i = userData.find(function (item) {
             return item.name === user.name
         })
-        if(i){
+        if (i) {
             userData.splice(i, 1);
         }
         io.emit("user info", userData);
@@ -41,22 +41,22 @@ io.on('connection', function (socket) {
 
     socket.on('notify event', function (data) {
         io.emit('notify event', data);
-        fs.writeFileSync('io_records.txt', '\n'+JSON.stringify(data), {
+        fs.writeFileSync('io_records.txt', '\n' + JSON.stringify(data), {
             flag: 'a'
-        }, function(err){
-            if(err) throw err;         
+        }, function (err) {
+            if (err) throw err;
         });
     })
-    
-    socket.on('message' ,function(data){
+
+    socket.on('message', function (data) {
         io.emit('message', data);
-        fs.writeFileSync('io_records.txt', '\n'+JSON.stringify(data), {
+        fs.writeFileSync('io_records.txt', '\n' + JSON.stringify(data), {
             flag: 'a'
-        }, function(err){
-            if(err) throw err;         
+        }, function (err) {
+            if (err) throw err;
         });
     })
-    
+
     socket.on('disconnect', function () {
         console.log('user disconnected');
         io.emit('user count', io.eio.clientsCount);
