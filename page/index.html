@@ -45,11 +45,8 @@
             <transition-group name="slide-fade">
                 <div key="1" class="online-wrap" v-if="show">
                     当前在线：
-                    <span class="online-user">
-                        <img src="avatar.png" alt=""> qhx
-                    </span>
-                    <span class="online-user">
-                        <img src="avatar.png" alt=""> xiaobudianxihuan
+                    <span class="online-user" v-for="item in userData">
+                        <img :src="item.avatar" alt=""> {{item.name}}
                     </span>
                 </div>
                 <div key="2" class="content" v-if="show">
@@ -71,8 +68,9 @@
     
                     </div>
                     <div class="con-foot">
-                        <img class="icon" @click="onClickEmo" src="icon.png" alt="">
-                        <img class="icon" src="icon.png" alt="">
+                        <img class="icon" @click="onClickEmo" src="icon.png" alt="" title="emoji">
+                        <img class="icon fl" style="margin-right:12px;" src="icon/setting.png" alt="" title="设置">
+                        <img class="icon fl" style="margin-right:0px;" src="icon/history.png" alt="" title="历史记录">
                         <div contenteditable="true" @click="emoShow=false" id="msginput"></div>
                         <button class="sendbtn" @click="onClickSend">
                             <!-- <img class="loading-icon" src="icon/loading.png" alt=""> -->
@@ -114,29 +112,7 @@
         new Vue({
             el: '#app',
             data: {
-                msgData: [
-                    {
-                        time: '2017-09-27 14:21',
-                        name: 'qhx1',
-                        message: 'Hello message!',
-                        avatar: 'i/9.gif',
-                        type: 0,
-                    },
-                    {
-                        time: '2017-09-27 14:21',
-                        name: 'qhx',
-                        message: 'Hello message!',
-                        avatar: 'i/9.gif',
-                        type: 1,
-                    },
-                    {
-                        time: '2017-09-27 14:21',
-                        name: 'qhx1',
-                        message: 'Hello message!',
-                        avatar: 'i/0.gif',
-                        type: 1,
-                    },
-                ],
+                msgData: [],
                 message:'',
                 myName: '',
                 myAvatar: '',
@@ -246,6 +222,7 @@
                 ],
                 emoShow: false,
                 socket: null,
+                userData:[],
             },
             created() {
                 if(localStorage.getItem("name") && localStorage.getItem("avatar")){
@@ -259,12 +236,26 @@
             computed:{
 
             },
+            watch:{
+                "msgData":function(n, o){
+                    this.domSorcollBtom();
+                }
+            },
             mounted() {
                 var socket = io('http://localhost:3000');
                 this.socket = socket;
                 var t = this;
+                console.log(socket)
                 //连接成功
                 socket.on('connect', function () {
+                    socket.emit('join',
+                        {
+                            name: t.myName,
+                            avatar: t.myAvatar,
+                        }
+                    );
+
+
                     var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
                     socket.emit('notify event',
                         {
@@ -278,6 +269,13 @@
                 });
                 //断开连接
                 socket.on('disconnect', function () {
+                    alert(1)
+                    socket.emit('leave',
+                        {
+                            name: t.myName,
+                            avatar: t.myAvatar,
+                        }
+                    );
                     var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
                     socket.emit('notify event',
                         {
@@ -291,14 +289,18 @@
                 });
                 //接收提示消息
                 socket.on('notify event', function (obj) {
-                    console.log(obj);
+                    //console.log(obj);
                     t.msgData.push(obj);
                 })
                 //接收消息
                 socket.on('message', function (obj) {
-                    console.log(obj);
+                    //console.log(obj);
                     t.msgData.push(obj);
                 });
+                //在线users信息
+                socket.on('user info', function(user){
+                    t.userData = user;
+                })
             },
             methods: {
                 selectAvatar(src, index){
@@ -332,6 +334,7 @@
                 onClickSend(){
                     this.emoShow = false;
                     var msg = document.getElementById("msginput").innerHTML;
+                    if(msg=='' || msg==null) return false;
                     var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
                     var t=this;
                     this.socket.emit('message',
@@ -343,7 +346,7 @@
                             type: 1,
                         }
                     );
-                    this.domSorcollBtom();
+                    //this.domSorcollBtom();
                     document.getElementById("msginput").innerHTML='';
                 },
                 domSorcollBtom(){
