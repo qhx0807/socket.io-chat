@@ -9,8 +9,8 @@ var userData = [];
 
 app.get('/', function (req, res) {
     res.send('<h1>Hello world</h1>');
+    //res.sendFile(__dirname + '/page/index.html');
 });
-
 
 
 io.on('connection', function (socket) {
