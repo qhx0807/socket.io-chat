@@ -172,6 +172,8 @@ canvas {
     padding: 5px 12px;
     font-size: 15px;
     font-family: "微软雅黑",Arial,sans-serif;
+    user-modify: read-write-plaintext-only;
+    -webkit-user-modify: read-write-plaintext-only
 }
 .con-body ul{
     padding: 0;

@@ -44,7 +44,7 @@
         <div id="app" v-cloak>
             <transition-group name="slide-fade">
                 <div key="1" class="online-wrap" v-if="show">
-                    当前在线：
+                    当前在线({{userCount}})：
                     <span class="online-user" v-for="item in userData">
                         <img :src="item.avatar" alt=""> {{item.name}}
                     </span>
@@ -71,7 +71,7 @@
                         <img class="icon" @click="onClickEmo" src="icon.png" alt="" title="emoji">
                         <img class="icon fl" style="margin-right:12px;" src="icon/setting.png" alt="" title="设置">
                         <img class="icon fl" style="margin-right:0px;" src="icon/history.png" alt="" title="历史记录">
-                        <div contenteditable="true" @click="emoShow=false" id="msginput"></div>
+                        <div contenteditable="plaintext-only" @click="emoShow=false" @keyup.enter="onClickSend" id="msginput"></div>
                         <button class="sendbtn" @click="onClickSend">
                             <!-- <img class="loading-icon" src="icon/loading.png" alt=""> -->
                             发送(Enter)
@@ -223,6 +223,7 @@
                 emoShow: false,
                 socket: null,
                 userData:[],
+                userCount:0,
             },
             created() {
                 if(localStorage.getItem("name") && localStorage.getItem("avatar")){
@@ -238,14 +239,16 @@
             },
             watch:{
                 "msgData":function(n, o){
-                    this.domSorcollBtom();
+                    this.$nextTick(function () {
+                        this.domSorcollBtom();
+                    })
                 }
             },
             mounted() {
                 var socket = io('http://localhost:3000');
                 this.socket = socket;
                 var t = this;
-                console.log(socket)
+                //console.log(socket)
                 //连接成功
                 socket.on('connect', function () {
                     socket.emit('join',
@@ -269,7 +272,6 @@
                 });
                 //断开连接
                 socket.on('disconnect', function () {
-                    alert(1)
                     socket.emit('leave',
                         {
                             name: t.myName,
@@ -289,17 +291,20 @@
                 });
                 //接收提示消息
                 socket.on('notify event', function (obj) {
-                    //console.log(obj);
                     t.msgData.push(obj);
                 })
                 //接收消息
                 socket.on('message', function (obj) {
-                    //console.log(obj);
                     t.msgData.push(obj);
                 });
                 //在线users信息
                 socket.on('user info', function(user){
                     t.userData = user;
+                })
+
+                //在线users信息数量
+                socket.on('user count', function(count){
+                    t.userCount = count;
                 })
             },
             methods: {
@@ -331,10 +336,16 @@
                     var dom = document.getElementById("msginput");
                     dom.innerHTML += `<img src="${url}">`;
                 },
-                onClickSend(){
+                onClickSend(e){
+                    e.preventDefault();
+                    String.prototype.trim = function() { 
+                        return this.replace(/(^\s*)|(\s*$)/g, ''); 
+                    }; 
                     this.emoShow = false;
-                    var msg = document.getElementById("msginput").innerHTML;
-                    if(msg=='' || msg==null) return false;
+                    var msg = document.getElementById("msginput").innerHTML.replace(/<br>/g,'').trim();
+                    if(msg=='' || msg==null){
+                        return false
+                    }
                     var nowTime = new Date().Format("yyyy-MM-DD hh:mm:ss");
                     var t=this;
                     this.socket.emit('message',
@@ -346,7 +357,6 @@
                             type: 1,
                         }
                     );
-                    //this.domSorcollBtom();
                     document.getElementById("msginput").innerHTML='';
                 },
                 domSorcollBtom(){

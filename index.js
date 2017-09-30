@@ -15,25 +15,25 @@ app.get('/', function (req, res) {
 
 io.on('connection', function (socket) {
     console.log('a user connected');
-    
+    io.emit('user count', io.eio.clientsCount);
+
     socket.on('join', function(user){
-        var i = userData.findIndex(function(item){
+        //console.log(user)
+        var i = userData.find(function(item){
             return item.name === user.name
         })
-        if(i>=0){
-            return false;
-        }else{
+        if(!i){
             userData.push(user);
         }
         io.emit("user info", userData);
     })
 
     socket.on('leave', function(user){
-        console.log(user)
-        var i = userData.findIndex(function(item){
+        //console.log(user)
+        var i = userData.find(function(item){
             return item.name === user.name
         })
-        if(i>=0){
+        if(i){
             userData.splice(i, 1);
         }
         io.emit("user info", userData);
@@ -59,6 +59,7 @@ io.on('connection', function (socket) {
     
     socket.on('disconnect', function () {
         console.log('user disconnected');
+        io.emit('user count', io.eio.clientsCount);
     });
 
 });
